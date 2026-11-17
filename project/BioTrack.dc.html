@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #EFEEE8; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #0F172A; -webkit-font-smoothing: antialiased; }
+  a { color: #00A067; text-decoration: none; }
+  a:hover { color: #007E51; }
+  * { box-sizing: border-box; }
+  button { font-family: inherit; cursor: pointer; border: 0; background: transparent; padding: 0; color: inherit; }
+  input, textarea { font-family: inherit; outline: none; border: 0; background: transparent; color: inherit; }
+  input::placeholder { color: #94A3B8; }
+  ::selection { background: rgba(0, 208, 132, 0.25); }
+  @keyframes bt-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes bt-pulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.2); opacity: 0.15; } }
+  @keyframes bt-slide { from { transform: translateX(6px); opacity: 0; } to { transform: none; opacity: 1; } }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; padding: 48px 56px 80px; display: flex; flex-direction: column; gap: 36px; font-family: 'Inter', system-ui;">
+
+  <!-- ═══════════════ BRAND STRIP ═══════════════ -->
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; border-bottom: 1px solid rgba(15, 23, 42, 0.08); padding-bottom: 28px;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <div style="width: 56px; height: 56px; border-radius: 16px; background: #00D084; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 32px -12px rgba(0, 208, 132, 0.55);">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <path d="M15 27C15 17 21 11 27 9C27 20 21 25 15 27Z" fill="#fff"/>
+          <path d="M15 27C15 17 9 11 3 9C3 20 9 25 15 27Z" fill="#fff" fill-opacity="0.55"/>
+          <path d="M15 27V16" stroke="#00D084" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #64748B; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace;">Projeto · MVP v1.0</div>
+        <div style="display: flex; align-items: baseline; gap: 12px;">
+          <div style="font-size: 32px; font-weight: 700; color: #1E3A8A; letter-spacing: -0.02em;">BioTrack</div>
+          <div style="font-size: 15px; color: #64748B;">Plataforma de sustentabilidade logística</div>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(0, 208, 132, 0.1); color: #007E51; font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace;">
+        <span style="width: 6px; height: 6px; border-radius: 999px; background: #00D084; display: inline-block; animation: bt-pulse 2s infinite;"></span>
+        FUNCIONAL
+      </div>
+      <div style="padding: 8px 14px; border-radius: 999px; background: rgba(30, 58, 138, 0.08); color: #1E3A8A; font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace;">
+        iOS · Flutter
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ MAIN GRID: NAV · PHONE · NOTES ═══════════════ -->
+  <div style="display: grid; grid-template-columns: 260px 1fr 360px; gap: 40px; align-items: start;">
+
+    <!-- ── NAV: screen selector ────────────────── -->
+    <div style="position: sticky; top: 32px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #64748B; font-family: 'JetBrains Mono', monospace;">Telas · 12</div>
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <sc-for list="{{ screenGroups }}" as="group" hint-placeholder-count="5">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #94A3B8; padding-left: 4px; font-family: 'JetBrains Mono', monospace;">{{ group.label }}</div>
+            <sc-for list="{{ group.items }}" as="item" hint-placeholder-count="3">
+              <button onClick="{{ item.go }}" style="{{ item.style }}">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; opacity: 0.55; letter-spacing: 0.06em;">{{ item.code }}</span>
+                <span style="font-size: 13.5px; font-weight: 500;">{{ item.label }}</span>
+                <sc-if value="{{ item.isActive }}" hint-placeholder-val="{{ false }}">
+                  <span style="margin-left: auto; width: 6px; height: 6px; border-radius: 999px; background: #00D084;"></span>
+                </sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top: 10px; padding: 16px; border-radius: 14px; background: #fff; border: 1px solid rgba(15, 23, 42, 0.06);">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #64748B; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px;">Sistema</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+            <div style="width: 16px; height: 16px; border-radius: 4px; background: #00D084;"></div>
+            <span style="font-family: 'JetBrains Mono', monospace; color: #475569;">#00D084 · Verde Bio</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+            <div style="width: 16px; height: 16px; border-radius: 4px; background: #1E3A8A;"></div>
+            <span style="font-family: 'JetBrains Mono', monospace; color: #475569;">#1E3A8A · Azul Bio</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+            <div style="width: 16px; height: 16px; border-radius: 4px; background: #64748B;"></div>
+            <span style="font-family: 'JetBrains Mono', monospace; color: #475569;">#64748B · Cinza</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PHONE STAGE ────────────────────────── -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 24px;">
+
+      <!-- context strip above phone -->
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 460px;">
+        <div style="display: flex; align-items: baseline; gap: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: #94A3B8; letter-spacing: 0.1em;">{{ activeScreenCode }}</div>
+          <div style="font-size: 15px; font-weight: 600; color: #1E3A8A;">{{ activeScreenTitle }}</div>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button onClick="{{ prevScreen }}" style="width: 32px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid rgba(15, 23, 42, 0.08); display: flex; align-items: center; justify-content: center; color: #475569;">
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button onClick="{{ nextScreen }}" style="width: 32px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid rgba(15, 23, 42, 0.08); display: flex; align-items: center; justify-content: center; color: #475569;">
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- The Phone -->
+      <div style="filter: drop-shadow(0 60px 120px rgba(30, 58, 138, 0.18)) drop-shadow(0 20px 40px rgba(0, 0, 0, 0.06));">
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+          <div style="height: 100%; background: #F9FAFB; padding-top: 44px; overflow-y: auto; position: relative;">
+            {{ screenNode }}
+          </div>
+        </x-import>
+      </div>
+
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #94A3B8; letter-spacing: 0.08em;">402 × 874 · iPhone 15 Pro</div>
+    </div>
+
+    <!-- ── NOTES / SPEC PANEL ──────────────────── -->
+    <div style="position: sticky; top: 32px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="padding: 22px; border-radius: 16px; background: #fff; border: 1px solid rgba(15, 23, 42, 0.06);">
+        <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #64748B; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px;">Sobre esta tela</div>
+        <div style="font-size: 14.5px; font-weight: 600; color: #1E3A8A; margin-bottom: 8px;">{{ activeScreenTitle }}</div>
+        <div style="font-size: 13px; line-height: 1.55; color: #475569;">{{ activeScreenDescription }}</div>
+      </div>
+
+      <div style="padding: 22px; border-radius: 16px; background: #fff; border: 1px solid rgba(15, 23, 42, 0.06);">
+        <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #64748B; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px;">Endpoint(s)</div>
+        <sc-for list="{{ activeEndpoints }}" as="ep" hint-placeholder-count="2">
+          <div style="display: flex; gap: 10px; padding: 8px 10px; margin-bottom: 6px; border-radius: 8px; background: #F9FAFB; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; align-items: baseline;">
+            <span style="color: #00A067; font-weight: 700; min-width: 42px;">{{ ep.method }}</span>
+            <span style="color: #1E3A8A;">{{ ep.path }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="padding: 22px; border-radius: 16px; background: linear-gradient(135deg, #1E3A8A 0%, #0F1E4B 100%); color: #fff;">
+        <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.6; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px;">Fórmula do cálculo</div>
+        <div style="display: flex; flex-direction: column; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.4;">
+          <div><span style="opacity: 0.5;">const</span> <span style="color: #7DD3FC;">CO2_PER_LITER</span> = <span style="color: #FCD34D;">2.31</span>;</div>
+          <div><span style="opacity: 0.5;">const</span> <span style="color: #7DD3FC;">TREES_PER_KG</span> = <span style="color: #FCD34D;">0.0476</span>;</div>
+          <div><span style="opacity: 0.5;">const</span> <span style="color: #7DD3FC;">ECON_PER_LITER</span> = <span style="color: #FCD34D;">2.00</span>;</div>
+          <div style="height: 1px; background: rgba(255,255,255,0.15); margin: 4px 0;"></div>
+          <div style="opacity: 0.7;">co2 = fuel × 2.31</div>
+          <div style="opacity: 0.7;">árvores = co2 × 0.0476</div>
+          <div style="opacity: 0.7;">R$ = fuel × 2.00</div>
+        </div>
+      </div>
+
+      <div style="padding: 22px; border-radius: 16px; background: #fff; border: 1px solid rgba(15, 23, 42, 0.06);">
+        <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #64748B; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px;">Impacto acumulado (sessão)</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="font-size: 12.5px; color: #475569;">CO₂ evitado</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #1E3A8A;">{{ summary.co2Fmt }} kg</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="font-size: 12.5px; color: #475569;">Árvores</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #1E3A8A;">{{ summary.trees }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="font-size: 12.5px; color: #475569;">Economia</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #1E3A8A;">R$ {{ summary.economyFmt }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="font-size: 12.5px; color: #475569;">Cálculos</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #1E3A8A;">{{ summary.count }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const VERDE = '#00D084';
+const VERDE_DK = '#007E51';
+const AZUL = '#1E3A8A';
+const AZUL_DK = '#0F1E4B';
+const GRAY = '#64748B';
+const GRAY2 = '#94A3B8';
+const GRAY3 = '#CBD5E1';
+const BORDER = 'rgba(15, 23, 42, 0.08)';
+const BORDER2 = 'rgba(15, 23, 42, 0.04)';
+const BG = '#F9FAFB';
+const RED = '#EF4444';
+
+const CO2_PER_LITER = 2.31;
+const TREES_PER_KG = 0.0476;
+const ECON_PER_LITER = 2.00;
+
+const SCREEN_ORDER = ['landing','login','register','calc','result','history','dashOp','reports','trilhas','trilhaDetail','dashEx','profile'];
+
+const SCREEN_META = {
+  landing: { code: 'S01', title: 'Landing / Splash', group: 'Onboarding',
+    desc: 'Primeira tela para novos usuários. Apresenta a proposta de valor, três pilares (calcular, aprender, reportar) e duas CTAs principais. Design em azul profundo com marca em verde.',
+    endpoints: [] },
+  login: { code: 'S02', title: 'Login', group: 'Onboarding',
+    desc: 'Autenticação por email/senha ou Google OAuth. Inputs com border-bottom estilo definido no doc. Ao entrar, redireciona para a Calculadora.',
+    endpoints: [{method:'POST', path:'/auth/login'}, {method:'POST', path:'/auth/google-login'}] },
+  register: { code: 'S03', title: 'Registar', group: 'Onboarding',
+    desc: 'Formulário completo com email, nome, senha, data de nascimento, cidade e educação. Cria conta OPERATIONAL por padrão e faz login automático.',
+    endpoints: [{method:'POST', path:'/auth/register'}] },
+  calc: { code: 'S04', title: 'Calculadora', group: 'Calculadora',
+    desc: 'Coração da plataforma. Usuário informa litros de combustível e KM mensais; o backend calcula CO₂ evitado, árvores salvas equivalentes e economia com biometano.',
+    endpoints: [{method:'POST', path:'/calculator/calculate'}] },
+  result: { code: 'S05', title: 'Resultado', group: 'Calculadora',
+    desc: 'Exibe o impacto do cálculo: CO₂ em destaque em card verde, seguido por métricas complementares. Cálculo é persistido automaticamente no histórico.',
+    endpoints: [{method:'POST', path:'/calculator/calculate'}] },
+  history: { code: 'S06', title: 'Histórico', group: 'Calculadora',
+    desc: 'Lista paginada de todos os cálculos do usuário com sumário no topo. Cada linha pode ser expandida ou removida. Ordenação por data desc.',
+    endpoints: [{method:'GET', path:'/calculator/history'}, {method:'GET', path:'/calculator/summary'}, {method:'DELETE', path:'/calculator/{id}'}] },
+  dashOp: { code: 'S07', title: 'Dashboard Operacional', group: 'Dashboard',
+    desc: 'KPIs em tempo real com filtro por período. Inclui gráfico de projeção de descarbonização (linear) e comparativo CO₂ vs Biometano (barras) — 60% de redução.',
+    endpoints: [{method:'GET', path:'/dashboard/operational/kpis'}, {method:'GET', path:'/dashboard/operational/projection'}, {method:'GET', path:'/dashboard/operational/comparison'}] },
+  reports: { code: 'S08', title: 'Relatórios ESG', group: 'Dashboard',
+    desc: 'Geração de relatórios ESG em PDF. Usuário escolhe tipo (Ambiental, Social, Governança) e período. Relatórios ficam em cache no dispositivo.',
+    endpoints: [{method:'POST', path:'/reports/generate'}, {method:'GET', path:'/reports/list'}] },
+  trilhas: { code: 'S09', title: 'Trilhas de Aprendizado', group: 'Aprendizado',
+    desc: 'Lista de trilhas educacionais em sustentabilidade — biometano, ESG, gêmeos digitais, blockchain, descarbonização e análise de impacto. Filtro por nível.',
+    endpoints: [{method:'GET', path:'/learning/paths'}] },
+  trilhaDetail: { code: 'S10', title: 'Detalhe da Trilha', group: 'Aprendizado',
+    desc: 'Módulos da trilha com progresso individual. Ring de progresso geral no topo. Concluir todos os módulos emite certificado (roadmap Q3 2026).',
+    endpoints: [{method:'GET', path:'/learning/paths/{id}'}, {method:'PUT', path:'/learning/progress'}] },
+  dashEx: { code: 'S11', title: 'Dashboard Explorador', group: 'Dashboard',
+    desc: 'Visão para o perfil EXPLORER — foco em aprendizado e impacto global vs individual. Mostra ranking, badges conquistadas e trilhas recomendadas.',
+    endpoints: [{method:'GET', path:'/dashboard/explorer/stats'}] },
+  profile: { code: 'S12', title: 'Perfil', group: 'Conta',
+    desc: 'Dados do usuário, resumo de impacto, configurações (notificações, idioma, tema) e ações de conta. Logout invalida os tokens JWT no cliente.',
+    endpoints: [{method:'GET', path:'/users/me'}, {method:'PUT', path:'/users/me'}] },
+};
+
+const SEED_HISTORY = [
+  { id: 6, fuel: 890, km: 9200, co2: 890 * CO2_PER_LITER, trees: Math.round(890 * CO2_PER_LITER * TREES_PER_KG), economy: 890 * ECON_PER_LITER, dateStr: '18 mai · 2026' },
+  { id: 5, fuel: 1120, km: 11800, co2: 1120 * CO2_PER_LITER, trees: Math.round(1120 * CO2_PER_LITER * TREES_PER_KG), economy: 1120 * ECON_PER_LITER, dateStr: '02 mai · 2026' },
+  { id: 4, fuel: 780, km: 8100, co2: 780 * CO2_PER_LITER, trees: Math.round(780 * CO2_PER_LITER * TREES_PER_KG), economy: 780 * ECON_PER_LITER, dateStr: '19 abr · 2026' },
+  { id: 3, fuel: 950, km: 10300, co2: 950 * CO2_PER_LITER, trees: Math.round(950 * CO2_PER_LITER * TREES_PER_KG), economy: 950 * ECON_PER_LITER, dateStr: '04 abr · 2026' },
+  { id: 2, fuel: 1050, km: 10800, co2: 1050 * CO2_PER_LITER, trees: Math.round(1050 * CO2_PER_LITER * TREES_PER_KG), economy: 1050 * ECON_PER_LITER, dateStr: '21 mar · 2026' },
+  { id: 1, fuel: 820, km: 8600, co2: 820 * CO2_PER_LITER, trees: Math.round(820 * CO2_PER_LITER * TREES_PER_KG), economy: 820 * ECON_PER_LITER, dateStr: '05 mar · 2026' },
+];
+
+const TRILHAS = [
+  { id: 't1', title: 'Introdução ao Biometano', level: 'Iniciante', modules: 8, hours: 4, progress: 62, color: '#00D084', icon: 'gas' },
+  { id: 't2', title: 'ESG e Sustentabilidade', level: 'Intermediário', modules: 12, hours: 8, progress: 25, color: '#1E3A8A', icon: 'esg' },
+  { id: 't3', title: 'Gêmeos Digitais', level: 'Avançado', modules: 10, hours: 12, progress: 0, color: '#7C3AED', icon: 'twin' },
+  { id: 't4', title: 'Blockchain de Carbono', level: 'Avançado', modules: 9, hours: 10, progress: 0, color: '#F59E0B', icon: 'block' },
+  { id: 't5', title: 'Descarbonização Logística', level: 'Intermediário', modules: 11, hours: 7, progress: 45, color: '#10B981', icon: 'truck' },
+  { id: 't6', title: 'Análise de Impacto', level: 'Iniciante', modules: 6, hours: 3, progress: 100, color: '#0EA5E9', icon: 'chart' },
+];
+
+const MODULES = [
+  { n: 1, title: 'O que é biometano?', dur: '18 min', done: true },
+  { n: 2, title: 'Produção e captação', dur: '22 min', done: true },
+  { n: 3, title: 'Injeção na rede de gás', dur: '15 min', done: true },
+  { n: 4, title: 'Aplicações em veículos pesados', dur: '28 min', done: true },
+  { n: 5, title: 'Comparativo com diesel B12', dur: '20 min', done: true },
+  { n: 6, title: 'Cadeia de valor no Brasil', dur: '25 min', done: false, active: true },
+  { n: 7, title: 'Casos de sucesso', dur: '30 min', done: false },
+  { n: 8, title: 'Certificação e Selo Verde', dur: '18 min', done: false },
+];
+
+const REPORTS = [
+  { name: 'Relatório ESG · Abril 2026', type: 'Ambiental', size: '2.3 MB', date: '02 mai' },
+  { name: 'Impacto Q1 2026', type: 'Ambiental', size: '4.1 MB', date: '05 abr' },
+  { name: 'Governança · Ata Anual', type: 'Governança', size: '1.8 MB', date: '15 mar' },
+];
+
+// ---------- helpers ----------
+const fmt = (n, dec = 0) => n.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+
+const h = React.createElement;
+
+// ---------- ICONS ----------
+function Icon({ name, size = 18, color = 'currentColor', stroke = 1.7 }) {
+  const p = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: stroke, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  switch(name) {
+    case 'leaf': return h('svg', p, h('path', { d: 'M12 22c0-8 5-13 10-14 0 9-5 13-10 14z' }), h('path', { d: 'M12 22c0-8-5-13-10-14 0 9 5 13 10 14z' }), h('path', { d: 'M12 22V12' }));
+    case 'calc': return h('svg', p, h('rect', { x: 5, y: 3, width: 14, height: 18, rx: 2 }), h('path', { d: 'M8 7h8M8 11h2M12 11h2M16 11h.01M8 15h2M12 15h2M16 15h.01M8 19h6' }));
+    case 'chart': return h('svg', p, h('path', { d: 'M3 3v18h18' }), h('path', { d: 'M7 15l4-4 4 3 5-7' }));
+    case 'book': return h('svg', p, h('path', { d: 'M4 4v16a1 1 0 001 1h15V4a1 1 0 00-1-1H5a1 1 0 00-1 1z' }), h('path', { d: 'M4 4v16' }));
+    case 'user': return h('svg', p, h('circle', { cx: 12, cy: 8, r: 4 }), h('path', { d: 'M4 21c0-4 4-7 8-7s8 3 8 7' }));
+    case 'plus': return h('svg', p, h('path', { d: 'M12 5v14M5 12h14' }));
+    case 'close': return h('svg', p, h('path', { d: 'M6 6l12 12M18 6L6 18' }));
+    case 'chev-r': return h('svg', p, h('path', { d: 'M9 6l6 6-6 6' }));
+    case 'chev-l': return h('svg', p, h('path', { d: 'M15 6l-6 6 6 6' }));
+    case 'chev-d': return h('svg', p, h('path', { d: 'M6 9l6 6 6-6' }));
+    case 'check': return h('svg', p, h('path', { d: 'M4 12l5 5L20 6' }));
+    case 'gas': return h('svg', p, h('path', { d: 'M6 21V6a3 3 0 013-3h5a3 3 0 013 3v15' }), h('path', { d: 'M6 21h11M9 9h5M17 8l3 3v7a2 2 0 01-2 2' }));
+    case 'twin': return h('svg', p, h('rect', { x: 3, y: 3, width: 8, height: 8, rx: 1 }), h('rect', { x: 13, y: 13, width: 8, height: 8, rx: 1 }), h('path', { d: 'M11 7h4M9 11v4' }));
+    case 'block': return h('svg', p, h('path', { d: 'M12 2l9 5v10l-9 5-9-5V7z' }), h('path', { d: 'M3 7l9 5 9-5M12 12v10' }));
+    case 'truck': return h('svg', p, h('path', { d: 'M2 6h12v10H2zM14 10h4l3 3v3h-7' }), h('circle', { cx: 6, cy: 18, r: 2 }), h('circle', { cx: 17, cy: 18, r: 2 }));
+    case 'esg': return h('svg', p, h('circle', { cx: 12, cy: 12, r: 9 }), h('path', { d: 'M12 3v18M3 12h18' }));
+    case 'tree': return h('svg', p, h('path', { d: 'M12 3l5 6h-3l4 5h-3l3 4H6l3-4H6l4-5H7z' }), h('path', { d: 'M12 18v3' }));
+    case 'money': return h('svg', p, h('rect', { x: 2, y: 6, width: 20, height: 12, rx: 2 }), h('circle', { cx: 12, cy: 12, r: 3 }));
+    case 'route': return h('svg', p, h('circle', { cx: 6, cy: 6, r: 3 }), h('circle', { cx: 18, cy: 18, r: 3 }), h('path', { d: 'M6 9v6a3 3 0 003 3h6' }));
+    case 'file': return h('svg', p, h('path', { d: 'M6 2h9l5 5v15H6z' }), h('path', { d: 'M15 2v5h5' }));
+    case 'bell': return h('svg', p, h('path', { d: 'M6 8a6 6 0 0112 0c0 7 3 8 3 8H3s3-1 3-8' }), h('path', { d: 'M10 21a2 2 0 004 0' }));
+    case 'globe': return h('svg', p, h('circle', { cx: 12, cy: 12, r: 9 }), h('path', { d: 'M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18' }));
+    case 'shield': return h('svg', p, h('path', { d: 'M12 2l8 3v6c0 5-4 9-8 11-4-2-8-6-8-11V5z' }));
+    case 'logout': return h('svg', p, h('path', { d: 'M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h4M16 17l5-5-5-5M21 12H9' }));
+    case 'download': return h('svg', p, h('path', { d: 'M12 3v13m-5-5l5 5 5-5M4 21h16' }));
+    case 'flame': return h('svg', p, h('path', { d: 'M12 2s5 4 5 10a5 5 0 01-10 0c0-2 1-3 1-3s-1 5 2 5 3-4 2-6c0-2 0-4-0-6z' }));
+    case 'award': return h('svg', p, h('circle', { cx: 12, cy: 9, r: 6 }), h('path', { d: 'M9 14l-2 8 5-3 5 3-2-8' }));
+    case 'trophy': return h('svg', p, h('path', { d: 'M6 4h12v6a6 6 0 01-12 0zM4 4h2v4a2 2 0 01-2-2zM18 4h2v2a2 2 0 01-2 2M9 20h6M10 20v-4h4v4' }));
+    default: return null;
+  }
+}
+
+// ---------- BUTTON ----------
+function PrimaryBtn({ label, onClick, icon, disabled, style = {} }) {
+  return h('button', {
+    onClick, disabled,
+    style: {
+      width: '100%', height: 52, borderRadius: 12,
+      background: disabled ? '#CBD5E1' : VERDE,
+      color: '#fff', fontSize: 16, fontWeight: 600,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+      boxShadow: disabled ? 'none' : '0 8px 18px -6px rgba(0, 208, 132, 0.45)',
+      transition: 'transform 0.15s',
+      cursor: disabled ? 'not-allowed' : 'pointer',
+      ...style,
+    },
+  }, icon && h(Icon, { name: icon, size: 18, color: '#fff', stroke: 2 }), label);
+}
+function SecondaryBtn({ label, onClick, icon, style = {} }) {
+  return h('button', {
+    onClick,
+    style: {
+      width: '100%', height: 52, borderRadius: 12,
+      background: 'transparent', color: AZUL,
+      border: `1px solid ${GRAY3}`,
+      fontSize: 16, fontWeight: 600,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+      cursor: 'pointer',
+      ...style,
+    },
+  }, icon && h(Icon, { name: icon, size: 18, color: AZUL, stroke: 2 }), label);
+}
+
+// ---------- INPUT (bottom-border style per doc) ----------
+function Field({ label, value, onChange, placeholder, type = 'text', suffix }) {
+  const [focused, setFocused] = React.useState(false);
+  return h('div', { style: { marginBottom: 24 } },
+    h('div', { style: { fontSize: 12, fontWeight: 600, color: GRAY, letterSpacing: '0.02em', marginBottom: 8, textTransform: 'uppercase', fontFamily: 'JetBrains Mono, monospace' } }, label),
+    h('div', {
+      style: {
+        display: 'flex', alignItems: 'center',
+        borderBottom: `2px solid ${focused ? VERDE : '#E5E7EB'}`,
+        paddingBottom: 8, transition: 'border-color 0.2s',
+      },
+    },
+      h('input', {
+        type, value, placeholder,
+        onFocus: () => setFocused(true),
+        onBlur: () => setFocused(false),
+        onChange: (e) => onChange(e.target.value),
+        style: { flex: 1, fontSize: 16, fontWeight: 500, color: AZUL, border: 0, background: 'transparent', padding: 0, width: '100%' },
+      }),
+      suffix && h('span', { style: { fontSize: 13, fontWeight: 600, color: VERDE, fontFamily: 'JetBrains Mono, monospace', paddingLeft: 8 } }, suffix)
+    )
+  );
+}
+
+// ---------- TAB BAR ----------
+function TabBar({ active, onGo }) {
+  const tabs = [
+    { id: 'calc', label: 'Calcular', icon: 'calc' },
+    { id: 'dashOp', label: 'Dashboard', icon: 'chart' },
+    { id: 'trilhas', label: 'Trilhas', icon: 'book' },
+    { id: 'profile', label: 'Perfil', icon: 'user' },
+  ];
+  return h('div', {
+    style: {
+      position: 'absolute', bottom: 0, left: 0, right: 0,
+      display: 'flex', height: 84, paddingBottom: 22,
+      background: 'rgba(255, 255, 255, 0.94)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      borderTop: `1px solid ${BORDER}`,
+      zIndex: 5,
+    },
+  }, tabs.map(t => {
+    const isA = t.id === active || (t.id === 'dashOp' && active === 'dashEx') || (t.id === 'calc' && (active === 'result' || active === 'history')) || (t.id === 'trilhas' && active === 'trilhaDetail');
+    return h('button', {
+      key: t.id, onClick: () => onGo(t.id),
+      style: {
+        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
+        color: isA ? VERDE : GRAY,
+      },
+    },
+      h(Icon, { name: t.icon, size: 22, color: isA ? VERDE : GRAY, stroke: isA ? 2.2 : 1.7 }),
+      h('span', { style: { fontSize: 10.5, fontWeight: isA ? 600 : 500, letterSpacing: '0.02em' } }, t.label)
+    );
+  }));
+}
+
+// ---------- CHARTS ----------
+function LineChart({ points, height = 130, width = 340 }) {
+  const max = Math.max(...points) * 1.15;
+  const pad = 10;
+  const step = (width - pad * 2) / (points.length - 1);
+  const path = points.map((v, i) => {
+    const x = pad + i * step;
+    const y = height - pad - (v / max) * (height - pad * 2);
+    return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }).join(' ');
+  const area = path + ` L ${(pad + (points.length - 1) * step).toFixed(1)} ${height - pad} L ${pad} ${height - pad} Z`;
+  return h('svg', { width, height, viewBox: `0 0 ${width} ${height}` },
+    h('defs', {},
+      h('linearGradient', { id: 'lg-area', x1: 0, y1: 0, x2: 0, y2: 1 },
+        h('stop', { offset: 0, stopColor: VERDE, stopOpacity: 0.25 }),
+        h('stop', { offset: 1, stopColor: VERDE, stopOpacity: 0 })
+      )
+    ),
+    [0.25, 0.5, 0.75].map((f, i) => h('line', { key: i, x1: pad, x2: width - pad, y1: pad + f * (height - pad * 2), y2: pad + f * (height - pad * 2), stroke: '#E5E7EB', strokeDasharray: '2 3' })),
+    h('path', { d: area, fill: 'url(#lg-area)' }),
+    h('path', { d: path, stroke: VERDE, strokeWidth: 2.5, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' }),
+    points.map((v, i) => {
+      const x = pad + i * step;
+      const y = height - pad - (v / max) * (height - pad * 2);
+      return h('circle', { key: i, cx: x, cy: y, r: i === points.length - 1 ? 4 : 0, fill: VERDE, stroke: '#fff', strokeWidth: 2 });
+    })
+  );
+}
+
+function BarComparison({ co2, biomethane }) {
+  const max = Math.max(co2, biomethane);
+  const w1 = (co2 / max) * 100;
+  const w2 = (biomethane / max) * 100;
+  return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 16 } },
+    h('div', {},
+      h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 6 } },
+        h('span', { style: { fontSize: 12, color: GRAY, fontWeight: 500 } }, 'Diesel B12'),
+        h('span', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 700, color: AZUL } }, `${fmt(co2, 0)} kg`)
+      ),
+      h('div', { style: { height: 14, background: '#F1F5F9', borderRadius: 999, overflow: 'hidden' } },
+        h('div', { style: { width: `${w1}%`, height: '100%', background: 'linear-gradient(90deg, #F97316, #EF4444)', borderRadius: 999 } })
+      )
+    ),
+    h('div', {},
+      h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 6 } },
+        h('span', { style: { fontSize: 12, color: GRAY, fontWeight: 500 } }, 'Biometano'),
+        h('span', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 700, color: AZUL } }, `${fmt(biomethane, 0)} kg`)
+      ),
+      h('div', { style: { height: 14, background: '#F1F5F9', borderRadius: 999, overflow: 'hidden' } },
+        h('div', { style: { width: `${w2}%`, height: '100%', background: `linear-gradient(90deg, ${VERDE}, ${VERDE_DK})`, borderRadius: 999 } })
+      )
+    )
+  );
+}
+
+// ═══════════════════════════════════════════════
+//  MAIN COMPONENT
+// ═══════════════════════════════════════════════
+class Component extends DCLogic {
+  state = {
+    screen: 'landing',
+    email: 'joao@transcargo.com.br',
+    password: '',
+    regName: 'João Silva',
+    regEmail: '',
+    regPassword: '',
+    fuelLiters: '850',
+    monthlyKm: '9200',
+    lastResult: null,
+    history: SEED_HISTORY,
+    period: 'mes',
+    trilhaFilter: 'todas',
+    selectedTrilha: TRILHAS[0],
+    reportType: 'ambiental',
+  };
+
+  go = (screen) => this.setState({ screen });
+  prev = () => {
+    const i = SCREEN_ORDER.indexOf(this.state.screen);
+    this.setState({ screen: SCREEN_ORDER[(i - 1 + SCREEN_ORDER.length) % SCREEN_ORDER.length] });
+  };
+  next = () => {
+    const i = SCREEN_ORDER.indexOf(this.state.screen);
+    this.setState({ screen: SCREEN_ORDER[(i + 1) % SCREEN_ORDER.length] });
+  };
+
+  calc = () => {
+    const fuel = parseFloat((this.state.fuelLiters + '').replace(',', '.')) || 0;
+    const km = parseFloat((this.state.monthlyKm + '').replace(',', '.')) || 0;
+    if (!fuel) return;
+    const co2 = fuel * CO2_PER_LITER;
+    const trees = Math.round(co2 * TREES_PER_KG);
+    const economy = fuel * ECON_PER_LITER;
+    const r = { id: Date.now(), fuel, km, co2, trees, economy, dateStr: 'agora' };
+    this.setState({ lastResult: r, history: [r, ...this.state.history], screen: 'result' });
+  };
+
+  summary() {
+    const h = this.state.history;
+    return {
+      co2: h.reduce((s, x) => s + x.co2, 0),
+      trees: h.reduce((s, x) => s + x.trees, 0),
+      economy: h.reduce((s, x) => s + x.economy, 0),
+      count: h.length,
+    };
+  }
+
+  // ─── SCREENS ───
+
+  scrLanding() {
+    return h('div', { key: 'landing', style: { height: '100%', display: 'flex', flexDirection: 'column', animation: 'bt-fade 0.4s' } },
+      // deep blue hero
+      h('div', { style: { flex: 1, background: `linear-gradient(160deg, ${AZUL} 0%, ${AZUL_DK} 100%)`, position: 'relative', overflow: 'hidden', padding: '32px 28px', display: 'flex', flexDirection: 'column' } },
+        // decorative circles
+        h('div', { style: { position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: VERDE, opacity: 0.15, top: -80, right: -80, filter: 'blur(20px)' } }),
+        h('div', { style: { position: 'absolute', width: 200, height: 200, borderRadius: '50%', border: `1px solid rgba(0, 208, 132, 0.25)`, top: 80, right: -40 } }),
+        h('div', { style: { position: 'absolute', width: 140, height: 140, borderRadius: '50%', border: `1px solid rgba(0, 208, 132, 0.2)`, top: 140, right: 20 } }),
+
+        // logo
+        h('div', { style: { display: 'flex', alignItems: 'center', gap: 12, marginBottom: 'auto', position: 'relative', zIndex: 2 } },
+          h('div', { style: { width: 44, height: 44, borderRadius: 12, background: VERDE, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0, 208, 132, 0.4)' } },
+            h(Icon, { name: 'leaf', size: 22, color: '#fff', stroke: 2 })
+          ),
+          h('span', { style: { color: '#fff', fontSize: 22, fontWeight: 700, letterSpacing: '-0.01em' } }, 'BioTrack')
+        ),
+
+        // hero copy
+        h('div', { style: { position: 'relative', zIndex: 2, marginBottom: 28 } },
+          h('div', { style: { fontSize: 11, fontWeight: 600, color: VERDE, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 16, fontFamily: 'JetBrains Mono, monospace' } }, 'Sustentabilidade Logística'),
+          h('h1', { style: { fontSize: 34, fontWeight: 700, color: '#fff', lineHeight: 1.15, letterSpacing: '-0.02em', margin: 0, marginBottom: 14 } }, 'Meça seu impacto. Reduza suas emissões.'),
+          h('p', { style: { fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, margin: 0 } }, 'Calcule o CO₂ da sua operação, acompanhe a economia com biometano e emita certificados ESG.')
+        ),
+
+        // feature bullets
+        h('div', { style: { position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 12 } },
+          [['calc', 'Calcular impacto em segundos'], ['book', 'Trilhas de aprendizado ESG'], ['file', 'Relatórios em PDF prontos']].map(([ic, txt]) =>
+            h('div', { key: txt, style: { display: 'flex', alignItems: 'center', gap: 12 } },
+              h('div', { style: { width: 32, height: 32, borderRadius: 8, background: 'rgba(0, 208, 132, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+                h(Icon, { name: ic, size: 16, color: VERDE, stroke: 2 })
+              ),
+              h('span', { style: { color: 'rgba(255,255,255,0.85)', fontSize: 14, fontWeight: 500 } }, txt)
+            )
+          )
+        )
+      ),
+      // white footer with CTAs
+      h('div', { style: { background: '#fff', padding: '28px 28px 40px', display: 'flex', flexDirection: 'column', gap: 12 } },
+        h(PrimaryBtn, { label: 'Criar conta grátis', icon: 'plus', onClick: () => this.go('register') }),
+        h(SecondaryBtn, { label: 'Já tenho conta', onClick: () => this.go('login') }),
+        h('div', { style: { textAlign: 'center', fontSize: 11, color: GRAY2, marginTop: 4, fontFamily: 'JetBrains Mono, monospace' } }, 'v1.0.0 · maio 2026')
+      )
+    );
+  }
+
+  scrLogin() {
+    return h('div', { key: 'login', style: { padding: '32px 28px 60px', animation: 'bt-fade 0.4s' } },
+      h('button', { onClick: () => this.go('landing'), style: { display: 'flex', alignItems: 'center', gap: 4, color: GRAY, fontSize: 13.5, fontWeight: 500, marginBottom: 32 } },
+        h(Icon, { name: 'chev-l', size: 16, color: GRAY }), 'Voltar'
+      ),
+      h('h1', { style: { fontSize: 28, fontWeight: 700, color: AZUL, letterSpacing: '-0.02em', margin: 0, marginBottom: 8 } }, 'Bom te ver de volta'),
+      h('p', { style: { fontSize: 14.5, color: GRAY, margin: 0, marginBottom: 40 } }, 'Entre para continuar rastreando seu impacto.'),
+      h(Field, { label: 'Email', value: this.state.email, onChange: v => this.setState({ email: v }), placeholder: 'seu@email.com' }),
+      h(Field, { label: 'Senha', value: this.state.password, onChange: v => this.setState({ password: v }), type: 'password', placeholder: '••••••••' }),
+      h('div', { style: { display: 'flex', justifyContent: 'flex-end', marginTop: -16, marginBottom: 32 } },
+        h('a', { style: { fontSize: 12.5, color: VERDE, fontWeight: 500, cursor: 'pointer' } }, 'Esqueci a senha')
+      ),
+      h(PrimaryBtn, { label: 'Entrar', onClick: () => this.go('calc') }),
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 12, margin: '28px 0' } },
+        h('div', { style: { flex: 1, height: 1, background: '#E5E7EB' } }),
+        h('span', { style: { fontSize: 11, color: GRAY2, fontWeight: 500, letterSpacing: '0.1em', fontFamily: 'JetBrains Mono, monospace' } }, 'OU'),
+        h('div', { style: { flex: 1, height: 1, background: '#E5E7EB' } })
+      ),
+      h('button', {
+        onClick: () => this.go('calc'),
+        style: {
+          width: '100%', height: 52, borderRadius: 12,
+          background: '#fff', color: AZUL,
+          border: `1px solid ${GRAY3}`,
+          fontSize: 15, fontWeight: 600,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+        },
+      },
+        h('svg', { width: 20, height: 20, viewBox: '0 0 24 24' },
+          h('path', { d: 'M22 12c0-1-.1-1.8-.3-2.7H12v5h5.7c-.2 1.3-1 2.4-2.1 3.1v2.6h3.4c2-1.8 3-4.5 3-8z', fill: '#4285F4' }),
+          h('path', { d: 'M12 22c2.7 0 5-1 6.7-2.4l-3.4-2.6c-.9.6-2 1-3.3 1-2.6 0-4.7-1.7-5.5-4H2.9v2.6C4.6 19.5 8 22 12 22z', fill: '#34A853' }),
+          h('path', { d: 'M6.5 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H2.9C2.3 8.8 2 10.4 2 12s.3 3.2.9 4.6L6.5 14z', fill: '#FBBC04' }),
+          h('path', { d: 'M12 5.4c1.5 0 2.8.5 3.8 1.5l2.9-2.9C16.9 2.6 14.7 2 12 2 8 2 4.6 4.5 2.9 7.4L6.5 10c.8-2.3 3-4 5.5-4z', fill: '#EA4335' })
+        ),
+        'Continuar com Google'
+      ),
+      h('div', { style: { textAlign: 'center', marginTop: 32, fontSize: 13.5, color: GRAY } },
+        'Não tem uma conta? ',
+        h('a', { onClick: () => this.go('register'), style: { color: VERDE, fontWeight: 600, cursor: 'pointer' } }, 'Registar-se')
+      )
+    );
+  }
+
+  scrRegister() {
+    return h('div', { key: 'register', style: { padding: '32px 28px 60px', animation: 'bt-fade 0.4s' } },
+      h('button', { onClick: () => this.go('landing'), style: { display: 'flex', alignItems: 'center', gap: 4, color: GRAY, fontSize: 13.5, fontWeight: 500, marginBottom: 28 } },
+        h(Icon, { name: 'chev-l', size: 16, color: GRAY }), 'Voltar'
+      ),
+      h('div', { style: { display: 'flex', gap: 8, marginBottom: 28 } },
+        h('div', { style: { flex: 1, height: 3, background: VERDE, borderRadius: 999 } }),
+        h('div', { style: { flex: 1, height: 3, background: '#E5E7EB', borderRadius: 999 } })
+      ),
+      h('div', { style: { fontSize: 11, fontWeight: 600, color: VERDE, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8, fontFamily: 'JetBrains Mono, monospace' } }, 'Passo 1 de 2'),
+      h('h1', { style: { fontSize: 28, fontWeight: 700, color: AZUL, letterSpacing: '-0.02em', margin: 0, marginBottom: 8 } }, 'Criar sua conta'),
+      h('p', { style: { fontSize: 14.5, color: GRAY, margin: 0, marginBottom: 36 } }, 'Grátis para uso individual. Sem cartão.'),
+      h(Field, { label: 'Nome completo', value: this.state.regName, onChange: v => this.setState({ regName: v }), placeholder: 'Como quer ser chamado' }),
+      h(Field, { label: 'Email', value: this.state.regEmail, onChange: v => this.setState({ regEmail: v }), placeholder: 'seu@email.com' }),
+      h(Field, { label: 'Senha', value: this.state.regPassword, onChange: v => this.setState({ regPassword: v }), type: 'password', placeholder: 'Mínimo 8 caracteres' }),
+      h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 8 } },
+        h(Field, { label: 'Cidade', value: 'Coimbra', onChange: () => {} }),
+        h(Field, { label: 'Nascimento', value: '15/05/1995', onChange: () => {} }),
+      ),
+      h(Field, { label: 'Formação', value: 'Licenciatura', onChange: () => {} }),
+      h('div', { style: { display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 28, marginTop: 8 } },
+        h('div', { style: { width: 20, height: 20, borderRadius: 5, border: `2px solid ${VERDE}`, background: VERDE, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 } },
+          h(Icon, { name: 'check', size: 12, color: '#fff', stroke: 3 })
+        ),
+        h('div', { style: { fontSize: 12.5, color: GRAY, lineHeight: 1.5 } },
+          'Concordo com os ',
+          h('a', { style: { color: VERDE, fontWeight: 600 } }, 'Termos de Uso'),
+          ' e ',
+          h('a', { style: { color: VERDE, fontWeight: 600 } }, 'Política de Privacidade'),
+          '.'
+        )
+      ),
+      h(PrimaryBtn, { label: 'Criar conta e continuar', icon: 'chev-r', onClick: () => this.go('calc') })
+    );
+  }
+
+  scrCalc() {
+    const fuel = parseFloat((this.state.fuelLiters + '').replace(',', '.')) || 0;
+    const previewCo2 = fuel * CO2_PER_LITER;
+    return h('div', { key: 'calc', style: { paddingBottom: 100, animation: 'bt-fade 0.4s' } },
+      // header
+      h('div', { style: { padding: '20px 24px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+        h('div', {},
+          h('div', { style: { fontSize: 12.5, color: GRAY, marginBottom: 2 } }, 'Olá, João 👋'),
+          h('h1', { style: { fontSize: 26, fontWeight: 700, color: AZUL, margin: 0, letterSpacing: '-0.02em' } }, 'Calculadora')
+        ),
+        h('button', { onClick: () => this.go('history'), style: { width: 40, height: 40, borderRadius: 12, background: '#fff', border: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: AZUL } },
+          h(Icon, { name: 'chart', size: 18, color: AZUL, stroke: 2 })
+        )
+      ),
+
+      // context banner
+      h('div', { style: { margin: '16px 24px 24px', padding: 16, borderRadius: 14, background: 'linear-gradient(135deg, rgba(0, 208, 132, 0.08), rgba(0, 208, 132, 0.02))', border: `1px solid rgba(0, 208, 132, 0.2)`, display: 'flex', gap: 12, alignItems: 'flex-start' } },
+        h('div', { style: { width: 36, height: 36, borderRadius: 9, background: VERDE, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } },
+          h(Icon, { name: 'flame', size: 18, color: '#fff', stroke: 2 })
+        ),
+        h('div', {},
+          h('div', { style: { fontSize: 13, fontWeight: 600, color: AZUL, marginBottom: 2 } }, 'Substituição por biometano'),
+          h('div', { style: { fontSize: 12, color: GRAY, lineHeight: 1.5 } }, 'Calcule quanto CO₂ sua frota deixa de emitir substituindo diesel por biometano.')
+        )
+      ),
+
+      // input card
+      h('div', { style: { margin: '0 24px 20px', padding: 24, background: '#fff', borderRadius: 16, border: `1px solid ${BORDER}` } },
+        h('div', { style: { marginBottom: 24 } },
+          h('div', { style: { fontSize: 11, fontWeight: 600, color: GRAY, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12, fontFamily: 'JetBrains Mono, monospace' } }, 'Combustível mensal'),
+          h('div', { style: { display: 'flex', alignItems: 'baseline', gap: 8, borderBottom: `2px solid ${VERDE}`, paddingBottom: 8 } },
+            h('input', {
+              type: 'text', value: this.state.fuelLiters,
+              onChange: e => this.setState({ fuelLiters: e.target.value }),
+              style: { flex: 1, fontSize: 40, fontWeight: 700, color: AZUL, border: 0, background: 'transparent', padding: 0, width: '100%', fontFamily: 'JetBrains Mono, monospace' },
+            }),
+            h('span', { style: { fontSize: 15, fontWeight: 600, color: VERDE, fontFamily: 'JetBrains Mono, monospace' } }, 'litros')
+          )
+        ),
+        h('div', {},
+          h('div', { style: { fontSize: 11, fontWeight: 600, color: GRAY, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12, fontFamily: 'JetBrains Mono, monospace' } }, 'Quilometragem mensal'),
+          h('div', { style: { display: 'flex', alignItems: 'baseline', gap: 8, borderBottom: `2px solid #E5E7EB`, paddingBottom: 8 } },
+            h('input', {
+              type: 'text', value: this.state.monthlyKm,
+              onChange: e => this.setState({ monthlyKm: e.target.value }),
+              style: { flex: 1, fontSize: 24, fontWeight: 700, color: AZUL, border: 0, background: 'transparent', padding: 0, width: '100%', fontFamily: 'JetBrains Mono, monospace' },
+            }),
+            h('span', { style: { fontSize: 14, fontWeight: 600, color: GRAY, fontFamily: 'JetBrains Mono, monospace' } }, 'km')
+          )
+        )
+      ),
+
+      // preview strip
+      h('div', { style: { margin: '0 24px 20px', padding: '14px 16px', borderRadius: 12, background: '#fff', border: `1px dashed ${GRAY3}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+        h('div', {},
+          h('div', { style: { fontSize: 10.5, fontWeight: 600, color: GRAY2, letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'JetBrains Mono, monospace', marginBottom: 2 } }, 'Preview CO₂'),
+          h('div', { style: { fontSize: 12.5, color: GRAY } }, `${fuel} L × 2.31 kg/L`)
+        ),
+        h('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: AZUL } }, `${fmt(previewCo2, 0)} kg`)
+      ),
+
+      // action
+      h('div', { style: { margin: '0 24px' } },
+        h(PrimaryBtn, { label: 'Calcular impacto', icon: 'chev-r', onClick: this.calc })
+      ),
+
+      h(TabBar, { active: 'calc', onGo: this.go })
+    );
+  }
+
+  scrResult() {
+    const r = this.state.lastResult || this.state.history[0];
+    return h('div', { key: 'result', style: { paddingBottom: 100, animation: 'bt-fade 0.5s' } },
+      // hero verde
+      h('div', { style: { padding: '20px 24px 32px', background: `linear-gradient(160deg, ${VERDE} 0%, ${VERDE_DK} 100%)`, borderRadius: '0 0 32px 32px', position: 'relative', overflow: 'hidden' } },
+        h('div', { style: { position: 'absolute', width: 260, height: 260, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', top: -100, right: -80 } }),
+        h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 2 } },
+          h('button', { onClick: () => this.go('calc'), style: { width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+            h(Icon, { name: 'chev-l', size: 18, color: '#fff', stroke: 2 })
+          ),
+          h('button', { style: { width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+            h(Icon, { name: 'download', size: 16, color: '#fff', stroke: 2 })
+          )
+        ),
+        h('div', { style: { marginTop: 24, textAlign: 'center', position: 'relative', zIndex: 2 } },
+          h('div', { style: { fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12, fontFamily: 'JetBrains Mono, monospace' } }, 'CO₂ evitado neste cálculo'),
+          h('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 72, fontWeight: 700, color: '#fff', lineHeight: 1, letterSpacing: '-0.03em' } }, fmt(r.co2, 0)),
+          h('div', { style: { fontSize: 15, fontWeight: 500, color: 'rgba(255,255,255,0.85)', marginTop: 6 } }, 'quilogramas de CO₂')
+        ),
+        h('div', { style: { marginTop: 24, padding: 12, borderRadius: 12, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 2 } },
+          h(Icon, { name: 'check', size: 14, color: '#fff', stroke: 2.5 }),
+          h('span', { style: { fontSize: 13, fontWeight: 600, color: '#fff' } }, 'Cálculo salvo no histórico')
+        )
+      ),
+
+      // 3 stat cards
+      h('div', { style: { padding: '24px 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 } },
+        [
+          { icon: 'tree', label: 'Árvores salvas', value: r.trees, unit: 'árvores', color: '#10B981' },
+          { icon: 'money', label: 'Economia estimada', value: `R$ ${fmt(r.economy, 2)}`, unit: 'em combustível', color: '#F59E0B' },
+          { icon: 'route', label: 'Quilometragem', value: fmt(r.km, 0), unit: 'km rodados no mês', color: '#0EA5E9' },
+        ].map(s =>
+          h('div', { key: s.label, style: { padding: 16, background: '#fff', borderRadius: 14, border: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', gap: 14 } },
+            h('div', { style: { width: 48, height: 48, borderRadius: 12, background: s.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } },
+              h(Icon, { name: s.icon, size: 22, color: s.color, stroke: 2 })
+            ),
+            h('div', { style: { flex: 1 } },
+              h('div', { style: { fontSize: 11.5, color: GRAY, marginBottom: 3, letterSpacing: '0.02em' } }, s.label),
+              h('div', { style: { fontSize: 20, fontWeight: 700, color: AZUL, letterSpacing: '-0.01em', fontFamily: 'JetBrains Mono, monospace', lineHeight: 1.1 } }, s.value),
+              h('div', { style: { fontSize: 11, color: GRAY2, marginTop: 2 } }, s.unit)
+            )
+          )
+        )
+      ),
+
+      // actions
+      h('div', { style: { padding: '8px 24px 0', display: 'flex', flexDirection: 'column', gap: 10 } },
+        h(PrimaryBtn, { label: 'Novo cálculo', icon: 'plus', onClick: () => this.go('calc') }),
+        h(SecondaryBtn, { label: 'Ver histórico completo', onClick: () => this.go('history') })
+      ),
+
+      h(TabBar, { active: 'calc', onGo: this.go })
+    );
+  }
+
+  scrHistory() {
+    const s = this.summary();
+    return h('div', { key: 'history', style: { paddingBottom: 100, animation: 'bt-fade 0.4s' } },
+      h('div', { style: { padding: '20px 24px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+        h('div', {},
+          h('button', { onClick: () => this.go('calc'), style: { display: 'flex', alignItems: 'center', gap: 4, color: GRAY, fontSize: 13, fontWeight: 500, marginBottom: 6 } },
+            h(Icon, { name: 'chev-l', size: 14, color: GRAY }), 'Calculadora'
+          ),
+          h('h1', { style: { fontSize: 26, fontWeight: 700, color: AZUL, margin: 0, letterSpacing: '-0.02em' } }, 'Histórico')
+        ),
+        h('button', { style: { width: 40, height: 40, borderRadius: 12, background: '#fff', border: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: AZUL } },
+          h(Icon, { name: 'download', size: 16, color: AZUL, stroke: 2 })
+        )
+      ),
+
+      // summary card
+      h('div', { style: { margin: '18px 24px 24px', padding: 20, background: AZUL, borderRadius: 18, color: '#fff', position: 'relative', overflow: 'hidden' } },
+        h('div', { style: { position: 'absolute', width: 180, height: 180, borderRadius: '50%', background: VERDE, opacity: 0.15, top: -60, right: -40 } }),
+        h('div', { style: { fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: VERDE, marginBottom: 14, fontFamily: 'JetBrains Mono, monospace', position: 'relative', zIndex: 2 } }, 'Impacto acumulado · ' + s.count + ' cálculos'),
+        h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, position: 'relative', zIndex: 2 } },
+          [
+            { l: 'CO₂ evitado', v: fmt(s.co2 / 1000, 2), u: 'ton' },
+            { l: 'Árvores', v: fmt(s.trees, 0), u: 'salvas' },
+            { l: 'Economia', v: fmt(s.economy / 1000, 1) + 'k', u: 'R$' },
+          ].map(c =>
+            h('div', { key: c.l },
+              h('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1 } }, c.v),
+              h('div', { style: { fontSize: 10.5, opacity: 0.65, marginTop: 4 } }, c.u),
+              h('div', { style: { fontSize: 11, opacity: 0.85, marginTop: 3, fontWeight: 500 } }, c.l),
+            )
+          )
+        )
+      ),
+
+      // filter chips
+      h('div', { style: { padding: '0 24px 12px', display: 'flex', gap: 8, overflowX: 'auto' } },
+        ['Todos', 'Este mês', 'Últimos 3m', 'Este ano'].map((c, i) =>
+          h('div', { key: c, style: { padding: '6px 12px', borderRadius: 999, fontSize: 12.5, fontWeight: 500, background: i === 0 ? AZUL : '#fff', color: i === 0 ? '#fff' : GRAY, border: i === 0 ? 'none' : `1px solid ${BORDER}`, whiteSpace: 'nowrap' } }, c)
+        )
+      ),
+
+      // list
+      h('div', { style: { padding: '0 24px', display: 'flex', flexDirection: 'column' } },
+        this.state.history.map((r, i) =>
+          h('div', { key: r.id, style: { padding: '16px 0', borderBottom: i < this.state.history.length - 1 ? `1px solid ${BORDER}` : 'none', display: 'flex', alignItems: 'center', gap: 14 } },
+            h('div', { style: { width: 44, height: 44, borderRadius: 12, background: `linear-gradient(135deg, ${VERDE}, ${VERDE_DK})`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } },
+              h(Icon, { name: 'flame', size: 20, color: '#fff', stroke: 2 })
+            ),
+            h('div', { style: { flex: 1, minWidth: 0 } },
+              h('div', { style: { fontSize: 14.5, fontWeight: 600, color: AZUL, marginBottom: 3, display: 'flex', alignItems: 'baseline', gap: 8 } },
+                h('span', { style: { fontFamily: 'JetBrains Mono, monospace' } }, fmt(r.fuel, 0) + ' L'),
+                h('span', { style: { color: GRAY, fontSize: 12, fontWeight: 500 } }, '·'),
+                h('span', { style: { color: GRAY, fontSize: 12.5, fontWeight: 500 } }, fmt(r.km, 0) + ' km')
+              ),
+              h('div', { style: { fontSize: 11.5, color: GRAY2, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.02em' } }, r.dateStr)
+            ),
+            h('div', { style: { textAlign: 'right' } },
+              h('div', { style: { fontSize: 15, fontWeight: 700, color: VERDE_DK, fontFamily: 'JetBrains Mono, monospace' } }, fmt(r.co2, 0)),
+              h('div', { style: { fontSize: 10.5, color: GRAY2, fontFamily: 'JetBrains Mono, monospace' } }, 'kg CO₂')
+            )
+          )
+        )
+      ),
+
+      h(TabBar, { active: 'calc', onGo: this.go })
+    );
+  }
+
+  scrDashOp() {
+    const s = this.summary();
+    const points = [520, 720, 640, 890, 1120, 950, 1240, 1180, 1420, 1360, 1580, 1720];
+    const totalCo2 = s.co2;
+    const bio = totalCo2 * 0.4;
+    return h('div', { key: 'dashOp', style: { paddingBottom: 100, animation: 'bt-fade 0.4s' } },
+      h('div', { style: { padding: '20px 24px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+        h('div', {},
+          h('div', { style: { fontSize: 12.5, color: GRAY, marginBottom: 2 } }, 'Perfil operacional'),
+          h('h1', { style: { fontSize: 26, fontWeight: 700, color: AZUL, margin: 0, letterSpacing: '-0.02em' } }, 'Dashboard')
+        ),
+        h('button', { onClick: () => this.go('dashEx'), style: { padding: '8px 12px', borderRadius: 10, background: '#fff', border: `1px solid ${BORDER}`, fontSize: 12, fontWeight: 600, color: AZUL, display: 'flex', alignItems: 'center', gap: 6 } },
+          'Explorer', h(Icon, { name: 'chev-r', size: 12, color: AZUL, stroke: 2 })
+        )
+      ),
+      // period tabs
+      h('div', { style: { padding: '16px 24px 8px', display: 'flex', gap: 4 } },
+        [['sem', 'Sem'], ['mes', 'Mês'], ['tri', 'Tri'], ['ano', 'Ano']].map(([id, l]) =>
+          h('button', { key: id, onClick: () => this.setState({ period: id }), style: { flex: 1, padding: '10px 0', fontSize: 12.5, fontWeight: 600, color: this.state.period === id ? VERDE : GRAY, borderBottom: `2px solid ${this.state.period === id ? VERDE : 'transparent'}` } }, l)
+        )
+      ),
+
+      // KPI 3-grid
+      h('div', { style: { padding: '18px 24px 0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 } },
+        [
+          { l: 'CO₂', v: fmt(s.co2 / 1000, 1) + 't', trend: '+18%', color: VERDE },
+          { l: 'Árvores', v: fmt(s.trees, 0), trend: '+12%', color: '#10B981' },
+          { l: 'Economia', v: 'R$ ' + fmt(s.economy / 1000, 1) + 'k', trend: '+22%', color: '#F59E0B' },
+        ].map(k =>
+          h('div', { key: k.l, style: { padding: 14, background: '#fff', borderRadius: 14, border: `1px solid ${BORDER}` } },
+            h('div', { style: { fontSize: 10.5, fontWeight: 600, color: GRAY, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, fontFamily: 'JetBrains Mono, monospace' } }, k.l),
+            h('div', { style: { fontSize: 18, fontWeight: 700, color: AZUL, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '-0.01em', marginBottom: 6 } }, k.v),
+            h('div', { style: { fontSize: 10.5, fontWeight: 600, color: k.color, background: k.color + '15', padding: '2px 6px', borderRadius: 999, display: 'inline-block', fontFamily: 'JetBrains Mono, monospace' } }, '↑ ' + k.trend)
+          )
+        )
+      ),
+
+      // projection chart
+      h('div', { style: { margin: '20px 24px 0', padding: 20, background: '#fff', borderRadius: 16, border: `1px solid ${BORDER}` } },
+        h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 } },
+          h('div', {},
+            h('div', { style: { fontSize: 14.5, fontWeight: 600, color: AZUL } }, 'Projeção 12 meses'),
+            h('div', { style: { fontSize: 11.5, color: GRAY, marginTop: 2 } }, 'CO₂ acumulado evitado')
+          ),
+          h('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: VERDE, background: VERDE + '15', padding: '4px 8px', borderRadius: 6 } }, 'PROJ')
+        ),
+        h('div', { style: { marginTop: 12, marginLeft: -6 } },
+          h(LineChart, { points, width: 302, height: 130 })
+        ),
+        h('div', { style: { display: 'flex', justifyContent: 'space-between', fontFamily: 'JetBrains Mono, monospace', fontSize: 9.5, color: GRAY2, marginTop: 4, letterSpacing: '0.06em' } },
+          ['JAN', 'MAR', 'MAI', 'JUL', 'SET', 'DEZ'].map(m => h('span', { key: m }, m))
+        )
+      ),
+
+      // comparison
+      h('div', { style: { margin: '16px 24px 16px', padding: 20, background: '#fff', borderRadius: 16, border: `1px solid ${BORDER}` } },
+        h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 } },
+          h('div', {},
+            h('div', { style: { fontSize: 14.5, fontWeight: 600, color: AZUL } }, 'Diesel vs Biometano'),
+            h('div', { style: { fontSize: 11.5, color: GRAY, marginTop: 2 } }, 'Redução total nas emissões')
+          ),
+          h('div', { style: { textAlign: 'right' } },
+            h('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: VERDE_DK, letterSpacing: '-0.02em' } }, '-60%'),
+            h('div', { style: { fontSize: 10, color: GRAY2 } }, 'de emissões')
+          )
+        ),
+        h(BarComparison, { co2: totalCo2, biomethane: bio })
+      ),
+
+      // shortcut to reports
+      h('div', { style: { margin: '0 24px' } },
+        h('button', { onClick: () => this.go('reports'), style: { width: '100%', padding: 16, borderRadius: 14, background: 'linear-gradient(135deg, #1E3A8A, #0F1E4B)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' } },
+          h('div', { style: { width: 40, height: 40, borderRadius: 10, background: 'rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } },
+            h(Icon, { name: 'file', size: 18, color: '#fff', stroke: 2 })
+          ),
+          h('div', { style: { flex: 1, color: '#fff' } },
+            h('div', { style: { fontSize: 14, fontWeight: 600, marginBottom: 2 } }, 'Gerar relatório ESG'),
+            h('div', { style: { fontSize: 11.5, opacity: 0.7 } }, 'Exporte um PDF pronto para stakeholders')
+          ),
+          h(Icon, { name: 'chev-r', size: 18, color: '#fff', stroke: 2 })
+        )
+      ),
+
+      h(TabBar, { active: 'dashOp', onGo: this.go })
+    );
+  }
+
+  scrReports() {
+    return h('div', { key: 'reports', style: { paddingBottom: 100, animation: 'bt-fade 0.4s' } },
+      h('div', { style: { padding: '20px 24px 8px' } },
+        h('button', { onClick: () => this.go('dashOp'), style: { display: 'flex', alignItems: 'center', gap: 4, color: GRAY, fontSize: 13, fontWeight: 500, marginBottom: 8 } },
+          h(Icon, { name: 'chev-l', size: 14, color: GRAY }), 'Dashboard'
+        ),
+        h('h1', { style: { fontSize: 26, fontWeight: 700, color: AZUL, margin: 0, letterSpacing: '-0.02em' } }, 'Relatórios ESG'),
+        h('p', { style: { fontSize: 13.5, color: GRAY, margin: '4px 0 0' } }, 'Gere PDFs prontos para stakeholders.')
+      ),
+
+      // report type picker
+      h('div', { style: { padding: '20px 24px 0' } },
+        h('div', { style: { fontSize: 11, fontWeight: 600, color: GRAY, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10, fontFamily: 'JetBrains Mono, monospace' } }, 'Tipo de relatório'),
+        h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 } },
+          [['ambiental', 'Ambiental', 'leaf'], ['social', 'Social', 'user'], ['governanca', 'Govern.', 'shield']].map(([id, l, ic]) => {
+            const active = this.state.reportType === id;
+            return h('button', { key: id, onClick: () => this.setState({ reportType: id }), style: { padding: '14px 8px', borderRadius: 12, background: active ? AZUL : '#fff', border: active ? 'none' : `1px solid ${BORDER}`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, color: active ? '#fff' : AZUL } },
+              h(Icon, { name: ic, size: 20, color: active ? '#fff' : AZUL, stroke: 2 }),
+              h('div', { style: { fontSize: 12, fontWeight: 600 } }, l),
+            );
+          })
+        )
+      ),
+
+      // period
+      h('div', { style: { padding: '20px 24px 0' } },
+        h('div', { style: { fontSize: 11, fontWeight: 600, color: GRAY, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10, fontFamily: 'JetBrains Mono, monospace' } }, 'Período'),
+        h('div', { style: { padding: '14px 16px', background: '#fff', borderRadius: 12, border: `1px solid ${BORDER}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+          h('div', {},
+            h('div', { style: { fontSize: 14, fontWeight: 600, color: AZUL } }, 'Maio 2026'),
+            h('div', { style: { fontSize: 11.5, color: GRAY, fontFamily: 'JetBrains Mono, monospace' } }, '01/05 → 31/05')
+          ),
+          h(Icon, { name: 'chev-d', size: 18, color: GRAY, stroke: 2 })
+        )
+      ),
+
+      // preview card
+      h('div', { style: { margin: '20px 24px 0', padding: 20, background: `linear-gradient(135deg, rgba(0, 208, 132, 0.06), transparent)`, borderRadius: 16, border: `1px solid rgba(0, 208, 132, 0.2)` } },
+        h('div', { style: { display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16 } },
+          h('div', { style: { width: 44, height: 56, borderRadius: 6, background: '#fff', border: `1px solid ${BORDER}`, display: 'flex', flexDirection: 'column', gap: 3, padding: 6 } },
+            h('div', { style: { height: 2, background: '#E5E7EB', borderRadius: 1 } }),
+            h('div', { style: { height: 2, background: '#E5E7EB', borderRadius: 1, width: '75%' } }),
+            h('div', { style: { height: 2, background: VERDE, borderRadius: 1, width: '50%' } }),
+            h('div', { style: { height: 2, background: '#E5E7EB', borderRadius: 1 } }),
+            h('div', { style: { flex: 1, background: '#F1F5F9', borderRadius: 2, marginTop: 4 } }),
+          ),
+          h('div', {},
+            h('div', { style: { fontSize: 13, fontWeight: 600, color: AZUL, marginBottom: 2 } }, 'Preview'),
+            h('div', { style: { fontSize: 11.5, color: GRAY } }, '18 páginas · 4.2 MB estimado')
+          )
+        ),
+        h(PrimaryBtn, { label: 'Gerar PDF agora', icon: 'download', onClick: () => {} })
+      ),
+
+      // recent reports
+      h('div', { style: { padding: '24px 24px 0' } },
+        h('div', { style: { fontSize: 11, fontWeight: 600, color: GRAY, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10, fontFamily: 'JetBrains Mono, monospace' } }, 'Anteriores'),
+        h('div', { style: { display: 'flex', flexDirection: 'column' } },
+          REPORTS.map((r, i) =>
+            h('div', { key: r.name, style: { padding: '14px 0', borderBottom: i < REPORTS.length - 1 ? `1px solid ${BORDER}` : 'none', display: 'flex', alignItems: 'center', gap: 12 } },
+              h('div', { style: { width: 36, height: 36, borderRadius: 8, background: RED + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+                h(Icon, { name: 'file', size: 16, color: RED, stroke: 2 })
+              ),
+              h('div', { style: { flex: 1, minWidth: 0 } },
+                h('div', { style: { fontSize: 13.5, fontWeight: 600, color: AZUL, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, r.name),
+                h('div', { style: { fontSize: 11, color: GRAY, fontFamily: 'JetBrains Mono, monospace' } }, `${r.type} · ${r.size} · ${r.date}`)
+              ),
+              h(Icon, { name: 'download', size: 16, color: GRAY, stroke: 2 })
+            )
+          )
+        )
+      ),
+
+      h(TabBar, { active: 'dashOp', onGo: this.go })
+    );
+  }
+
+  scrTrilhas() {
+    return h('div', { key: 'trilhas', style: { paddingBottom: 100, animation: 'bt-fade 0.4s' } },
+      h('div', { style: { padding: '20px 24px 8px' } },
+        h('div', { style: { fontSize: 12.5, color: GRAY, marginBottom: 2 } }, '6 trilhas · 56 módulos'),
+        h('h1', { style: { fontSize: 26, fontWeight: 700, color: AZUL, margin: 0, letterSpacing: '-0.02em' } }, 'Aprender')
+      ),
+
+      // filter chips
+      h('div', { style: { padding: '18px 24px 8px', display: 'flex', gap: 8, overflowX: 'auto' } },
+        [['todas', 'Todas', 6], ['inic', 'Iniciante', 2], ['inter', 'Intermediário', 2], ['avan', 'Avançado', 2]].map(([id, l, c]) => {
+          const active = this.state.trilhaFilter === id;
+          return h('div', { key: id, onClick: () => this.setState({ trilhaFilter: id }), style: { padding: '7px 12px', borderRadius: 999, fontSize: 12.5, fontWeight: 600, background: active ? AZUL : '#fff', color: active ? '#fff' : GRAY, border: active ? 'none' : `1px solid ${BORDER}`, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' } },
+            l,
+            h('span', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 10.5, opacity: 0.7 } }, c)
+          );
+        })
+      ),
+
+      // trilha cards
+      h('div', { style: { padding: '12px 24px', display: 'flex', flexDirection: 'column', gap: 12 } },
+        TRILHAS.map(t =>
+          h('button', { key: t.id, onClick: () => this.setState({ selectedTrilha: t, screen: 'trilhaDetail' }), style: { padding: 16, background: '#fff', borderRadius: 14, border: `1px solid ${BORDER}`, textAlign: 'left', display: 'flex', gap: 14, alignItems: 'flex-start', cursor: 'pointer' } },
+            h('div', { style: { width: 48, height: 48, borderRadius: 12, background: t.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } },
+              h(Icon, { name: t.icon, size: 22, color: t.color, stroke: 2 })
+            ),
+            h('div', { style: { flex: 1, minWidth: 0 } },
+              h('div', { style: { display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 } },
+                h('span', { style: { fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: t.color, fontFamily: 'JetBrains Mono, monospace' } }, t.level),
+                t.progress === 100 && h('span', { style: { fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', color: VERDE_DK, background: VERDE + '20', padding: '2px 6px', borderRadius: 4, fontFamily: 'JetBrains Mono, monospace' } }, '✓ CONCLUÍDA'),
+              ),
+              h('div', { style: { fontSize: 14.5, fontWeight: 600, color: AZUL, marginBottom: 8, lineHeight: 1.25 } }, t.title),
+              h('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, fontSize: 11.5, color: GRAY, fontFamily: 'JetBrains Mono, monospace' } },
+                h('span', {}, t.modules + ' módulos'),
+                h('span', { style: { opacity: 0.4 } }, '·'),
+                h('span', {}, t.hours + 'h')
+              ),
+              h('div', { style: { height: 4, background: '#F1F5F9', borderRadius: 999, overflow: 'hidden' } },
+                h('div', { style: { width: `${t.progress}%`, height: '100%', background: t.color, borderRadius: 999, transition: 'width 0.4s' } })
+              ),
+              h('div', { style: { fontSize: 10.5, fontWeight: 600, color: GRAY, marginTop: 4, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.02em' } }, t.progress + '% completo')
+            )
+          )
+        )
+      ),
+
+      h(TabBar, { active: 'trilhas', onGo: this.go })
+    );
+  }
+
+  scrTrilhaDetail() {
+    const t = this.state.selectedTrilha;
+    const doneCount = MODULES.filter(m => m.done).length;
+    const pct = Math.round((doneCount / MODULES.length) * 100);
+    const ringR = 34;
+    const circ = 2 * Math.PI * ringR;
+    return h('div', { key: 'trilhaDetail', style: { paddingBottom: 100, animation: 'bt-fade 0.4s' } },
+      // hero
+      h('div', { style: { padding: '20px 24px 24px', background: `linear-gradient(160deg, ${t.color}, ${t.color}dd)`, borderRadius: '0 0 28px 28px', position: 'relative', overflow: 'hidden' } },
+        h('div', { style: { position: 'absolute', width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', top: -90, right: -80 } }),
+        h('button', { onClick: () => this.go('trilhas'), style: { width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, position: 'relative', zIndex: 2 } },
+          h(Icon, { name: 'chev-l', size: 18, color: '#fff', stroke: 2 })
+        ),
+        h('div', { style: { display: 'flex', gap: 14, alignItems: 'flex-start', position: 'relative', zIndex: 2 } },
+          h('div', { style: { position: 'relative', width: 84, height: 84 } },
+            h('svg', { width: 84, height: 84 },
+              h('circle', { cx: 42, cy: 42, r: ringR, fill: 'none', stroke: 'rgba(255,255,255,0.2)', strokeWidth: 6 }),
+              h('circle', { cx: 42, cy: 42, r: ringR, fill: 'none', stroke: '#fff', strokeWidth: 6, strokeLinecap: 'round', strokeDasharray: circ, strokeDashoffset: circ * (1 - pct / 100), transform: 'rotate(-90 42 42)' })
+            ),
+            h('div', { style: { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'JetBrains Mono, monospace', fontSize: 16, fontWeight: 700 } }, pct + '%')
+          ),
+          h('div', { style: { flex: 1, color: '#fff' } },
+            h('div', { style: { fontSize: 10.5, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.8, marginBottom: 6, fontFamily: 'JetBrains Mono, monospace' } }, t.level + ' · ' + t.modules + ' MÓDULOS'),
+            h('h2', { style: { fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: '-0.02em', lineHeight: 1.15 } }, t.title),
+            h('div', { style: { fontSize: 13, opacity: 0.85, marginTop: 6 } }, `${doneCount} de ${MODULES.length} concluídos · ${t.hours}h totais`)
+          )
+        )
+      ),
+
+      // CTA
+      h('div', { style: { padding: '20px 24px 0' } },
+        h(PrimaryBtn, { label: 'Continuar módulo 6', icon: 'chev-r', onClick: () => {}, style: { background: t.color, boxShadow: `0 8px 18px -6px ${t.color}80` } })
+      ),
+
+      // modules list
+      h('div', { style: { padding: '24px 24px 0' } },
+        h('div', { style: { fontSize: 11, fontWeight: 600, color: GRAY, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12, fontFamily: 'JetBrains Mono, monospace' } }, 'Módulos'),
+        h('div', { style: { display: 'flex', flexDirection: 'column' } },
+          MODULES.map((m, i) =>
+            h('div', { key: m.n, style: { padding: '12px 0', borderBottom: i < MODULES.length - 1 ? `1px solid ${BORDER}` : 'none', display: 'flex', alignItems: 'center', gap: 12 } },
+              m.done
+                ? h('div', { style: { width: 28, height: 28, borderRadius: '50%', background: VERDE, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(Icon, { name: 'check', size: 14, color: '#fff', stroke: 3 }))
+                : m.active
+                  ? h('div', { style: { width: 28, height: 28, borderRadius: '50%', background: '#fff', border: `2.5px solid ${t.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: t.color, fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 700 } }, m.n)
+                  : h('div', { style: { width: 28, height: 28, borderRadius: '50%', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: GRAY, fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600 } }, m.n),
+              h('div', { style: { flex: 1, minWidth: 0 } },
+                h('div', { style: { fontSize: 13.5, fontWeight: m.active ? 700 : 500, color: m.done ? GRAY : AZUL, textDecoration: m.done ? 'line-through' : 'none', textDecorationColor: GRAY2 } }, m.title),
+                h('div', { style: { fontSize: 11, color: GRAY2, marginTop: 2, fontFamily: 'JetBrains Mono, monospace' } }, m.dur)
+              ),
+              m.active && h('span', { style: { fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', color: t.color, background: t.color + '18', padding: '3px 8px', borderRadius: 999, fontFamily: 'JetBrains Mono, monospace' } }, 'ATUAL')
+            )
+          )
+        )
+      ),
+
+      h(TabBar, { active: 'trilhas', onGo: this.go })
+    );
+  }
+
+  scrDashEx() {
+    return h('div', { key: 'dashEx', style: { paddingBottom: 100, animation: 'bt-fade 0.4s' } },
+      h('div', { style: { padding: '20px 24px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+        h('div', {},
+          h('div', { style: { fontSize: 12.5, color: GRAY, marginBottom: 2 } }, 'Perfil explorador'),
+          h('h1', { style: { fontSize: 26, fontWeight: 700, color: AZUL, margin: 0, letterSpacing: '-0.02em' } }, 'Explorar')
+        ),
+        h('button', { onClick: () => this.go('dashOp'), style: { padding: '8px 12px', borderRadius: 10, background: '#fff', border: `1px solid ${BORDER}`, fontSize: 12, fontWeight: 600, color: AZUL, display: 'flex', alignItems: 'center', gap: 6 } },
+          'Operacional', h(Icon, { name: 'chev-r', size: 12, color: AZUL, stroke: 2 })
+        )
+      ),
+
+      // impact banner
+      h('div', { style: { margin: '16px 24px 20px', padding: 20, borderRadius: 18, background: `radial-gradient(circle at top right, ${VERDE}22, transparent), linear-gradient(160deg, ${AZUL}, ${AZUL_DK})`, color: '#fff', position: 'relative', overflow: 'hidden' } },
+        h('div', { style: { position: 'absolute', width: 160, height: 160, borderRadius: '50%', border: `1px solid rgba(255,255,255,0.15)`, top: 20, right: -60 } }),
+        h('div', { style: { position: 'absolute', width: 220, height: 220, borderRadius: '50%', border: `1px solid rgba(255,255,255,0.1)`, top: 20, right: -100 } }),
+        h('div', { style: { fontSize: 10.5, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: VERDE, marginBottom: 10, fontFamily: 'JetBrains Mono, monospace' } }, 'Impacto Global · Você'),
+        h('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 44, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.03em' } }, '#247'),
+        h('div', { style: { fontSize: 13, opacity: 0.8, marginTop: 6 } }, 'entre 12.8k usuários no Brasil'),
+        h('div', { style: { display: 'flex', gap: 20, marginTop: 20, paddingTop: 16, borderTop: `1px solid rgba(255,255,255,0.15)` } },
+          [['Streak', '12 dias'], ['XP', '2.4k'], ['Badges', '7']].map(([l, v]) =>
+            h('div', { key: l },
+              h('div', { style: { fontSize: 10, opacity: 0.6, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.08em', textTransform: 'uppercase' } }, l),
+              h('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 16, fontWeight: 700, marginTop: 2 } }, v)
+            )
+          )
+        )
+      ),
+
+      // badges
+      h('div', { style: { padding: '0 24px 20px' } },
+        h('div', { style: { fontSize: 11, fontWeight: 600, color: GRAY, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10, fontFamily: 'JetBrains Mono, monospace', display: 'flex', justifyContent: 'space-between' } },
+          h('span', {}, 'Conquistas'),
+          h('span', { style: { color: VERDE } }, 'Ver todas')
+        ),
+        h('div', { style: { display: 'flex', gap: 10, overflowX: 'auto' } },
+          [
+            { c: '#F59E0B', ic: 'flame', l: 'Primeira ton' },
+            { c: '#10B981', ic: 'tree', l: '100 árvores' },
+            { c: '#7C3AED', ic: 'trophy', l: 'Top 500' },
+            { c: '#0EA5E9', ic: 'award', l: '5 trilhas' },
+          ].map(b =>
+            h('div', { key: b.l, style: { flexShrink: 0, width: 90, padding: 14, borderRadius: 14, background: '#fff', border: `1px solid ${BORDER}`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 } },
+              h('div', { style: { width: 44, height: 44, borderRadius: '50%', background: b.c + '20', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+                h(Icon, { name: b.ic, size: 20, color: b.c, stroke: 2 })
+              ),
+              h('div', { style: { fontSize: 10.5, textAlign: 'center', fontWeight: 600, color: AZUL, letterSpacing: '0.02em' } }, b.l)
+            )
+          )
+        )
+      ),
+
+      // trilhas recomendadas mini
+      h('div', { style: { padding: '0 24px' } },
+        h('div', { style: { fontSize: 11, fontWeight: 600, color: GRAY, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10, fontFamily: 'JetBrains Mono, monospace' } }, 'Continue aprendendo'),
+        h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10 } },
+          TRILHAS.filter(t => t.progress > 0 && t.progress < 100).slice(0, 2).map(t =>
+            h('button', { key: t.id, onClick: () => this.setState({ selectedTrilha: t, screen: 'trilhaDetail' }), style: { padding: 14, background: '#fff', borderRadius: 12, border: `1px solid ${BORDER}`, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12 } },
+              h('div', { style: { width: 40, height: 40, borderRadius: 10, background: t.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+                h(Icon, { name: t.icon, size: 18, color: t.color, stroke: 2 })
+              ),
+              h('div', { style: { flex: 1 } },
+                h('div', { style: { fontSize: 13.5, fontWeight: 600, color: AZUL, marginBottom: 4 } }, t.title),
+                h('div', { style: { height: 3, background: '#F1F5F9', borderRadius: 999, overflow: 'hidden' } },
+                  h('div', { style: { width: `${t.progress}%`, height: '100%', background: t.color, borderRadius: 999 } })
+                )
+              ),
+              h('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: t.color } }, t.progress + '%')
+            )
+          )
+        )
+      ),
+
+      h(TabBar, { active: 'dashOp', onGo: this.go })
+    );
+  }
+
+  scrProfile() {
+    const s = this.summary();
+    return h('div', { key: 'profile', style: { paddingBottom: 100, animation: 'bt-fade 0.4s' } },
+      h('div', { style: { padding: '20px 24px 8px' } },
+        h('h1', { style: { fontSize: 26, fontWeight: 700, color: AZUL, margin: 0, letterSpacing: '-0.02em' } }, 'Perfil')
+      ),
+
+      // avatar card
+      h('div', { style: { padding: '20px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 } },
+        h('div', { style: { position: 'relative' } },
+          h('div', { style: { width: 84, height: 84, borderRadius: '50%', background: `linear-gradient(135deg, ${VERDE}, ${VERDE_DK})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 34, fontWeight: 700, letterSpacing: '-0.02em' } }, 'JS'),
+          h('div', { style: { position: 'absolute', bottom: 0, right: 0, width: 26, height: 26, borderRadius: '50%', background: VERDE, border: '3px solid #F9FAFB', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+            h(Icon, { name: 'check', size: 12, color: '#fff', stroke: 3 })
+          )
+        ),
+        h('div', { style: { textAlign: 'center' } },
+          h('div', { style: { fontSize: 19, fontWeight: 700, color: AZUL, letterSpacing: '-0.01em' } }, 'João Silva'),
+          h('div', { style: { fontSize: 12.5, color: GRAY, marginTop: 2 } }, 'joao@transcargo.com.br')
+        ),
+        h('div', { style: { padding: '4px 10px', borderRadius: 999, background: VERDE + '18', fontSize: 10.5, fontWeight: 600, color: VERDE_DK, letterSpacing: '0.08em', fontFamily: 'JetBrains Mono, monospace' } }, 'OPERATIONAL · MEMBRO PRO')
+      ),
+
+      // stats row
+      h('div', { style: { margin: '20px 24px 20px', padding: 16, background: '#fff', borderRadius: 14, border: `1px solid ${BORDER}`, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 } },
+        [
+          { l: 'CO₂', v: fmt(s.co2 / 1000, 1) + 't', c: VERDE },
+          { l: 'Árvores', v: fmt(s.trees, 0), c: '#10B981' },
+          { l: 'R$', v: fmt(s.economy / 1000, 1) + 'k', c: '#F59E0B' },
+        ].map((k, i) =>
+          h('div', { key: k.l, style: { textAlign: 'center', borderRight: i < 2 ? `1px solid ${BORDER}` : 'none' } },
+            h('div', { style: { fontSize: 10, fontWeight: 600, color: GRAY, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'JetBrains Mono, monospace', marginBottom: 4 } }, k.l),
+            h('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: 18, fontWeight: 700, color: k.c, letterSpacing: '-0.01em' } }, k.v),
+          )
+        )
+      ),
+
+      // settings list
+      h('div', { style: { padding: '0 24px' } },
+        h('div', { style: { fontSize: 11, fontWeight: 600, color: GRAY, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10, fontFamily: 'JetBrains Mono, monospace' } }, 'Conta'),
+        h('div', { style: { background: '#fff', borderRadius: 14, border: `1px solid ${BORDER}`, overflow: 'hidden' } },
+          [
+            { ic: 'user', l: 'Editar perfil', c: AZUL },
+            { ic: 'bell', l: 'Notificações', c: AZUL, r: 'Ativas' },
+            { ic: 'globe', l: 'Idioma', c: AZUL, r: 'PT-BR' },
+            { ic: 'shield', l: 'Segurança & privacidade', c: AZUL },
+          ].map((it, i) =>
+            h('div', { key: it.l, style: { padding: '14px 16px', borderBottom: i < 3 ? `1px solid ${BORDER}` : 'none', display: 'flex', alignItems: 'center', gap: 12 } },
+              h(Icon, { name: it.ic, size: 18, color: it.c, stroke: 2 }),
+              h('div', { style: { flex: 1, fontSize: 14, fontWeight: 500, color: AZUL } }, it.l),
+              it.r && h('div', { style: { fontSize: 12, color: GRAY, fontFamily: 'JetBrains Mono, monospace' } }, it.r),
+              h(Icon, { name: 'chev-r', size: 14, color: GRAY2, stroke: 2 })
+            )
+          )
+        )
+      ),
+
+      // logout
+      h('div', { style: { padding: '20px 24px 0' } },
+        h('button', { onClick: () => this.go('landing'), style: { width: '100%', padding: 14, borderRadius: 12, background: '#fff', border: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: RED, fontSize: 14, fontWeight: 600 } },
+          h(Icon, { name: 'logout', size: 16, color: RED, stroke: 2 }),
+          'Sair da conta'
+        ),
+        h('div', { style: { textAlign: 'center', marginTop: 16, fontSize: 10.5, color: GRAY2, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.06em' } }, 'BIOTRACK · MVP v1.0.0')
+      ),
+
+      h(TabBar, { active: 'profile', onGo: this.go })
+    );
+  }
+
+  renderScreen() {
+    switch (this.state.screen) {
+      case 'landing': return this.scrLanding();
+      case 'login': return this.scrLogin();
+      case 'register': return this.scrRegister();
+      case 'calc': return this.scrCalc();
+      case 'result': return this.scrResult();
+      case 'history': return this.scrHistory();
+      case 'dashOp': return this.scrDashOp();
+      case 'reports': return this.scrReports();
+      case 'trilhas': return this.scrTrilhas();
+      case 'trilhaDetail': return this.scrTrilhaDetail();
+      case 'dashEx': return this.scrDashEx();
+      case 'profile': return this.scrProfile();
+      default: return null;
+    }
+  }
+
+  renderVals() {
+    const active = this.state.screen;
+    const meta = SCREEN_META[active];
+
+    // build sidebar groups
+    const groupOrder = ['Onboarding', 'Calculadora', 'Dashboard', 'Aprendizado', 'Conta'];
+    const screenGroups = groupOrder.map(g => ({
+      label: g,
+      items: SCREEN_ORDER
+        .filter(id => SCREEN_META[id].group === g)
+        .map(id => {
+          const isActive = id === active;
+          return {
+            code: SCREEN_META[id].code,
+            label: SCREEN_META[id].title,
+            isActive,
+            go: () => this.go(id),
+            style: [
+              'display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; text-align: left; cursor: pointer; transition: all 0.15s;',
+              isActive
+                ? `background: #fff; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(0, 208, 132, 0.35); color: ${AZUL};`
+                : `background: transparent; color: ${GRAY};`,
+            ].join(''),
+          };
+        }),
+    }));
+
+    const s = this.summary();
+
+    return {
+      screenNode: this.renderScreen(),
+      screenGroups,
+      activeScreenCode: meta.code,
+      activeScreenTitle: meta.title,
+      activeScreenDescription: meta.desc,
+      activeEndpoints: meta.endpoints.length ? meta.endpoints : [{ method: '—', path: 'Nenhum (tela cliente)' }],
+      summary: {
+        co2Fmt: fmt(s.co2, 0),
+        trees: s.trees,
+        economyFmt: fmt(s.economy, 2),
+        count: s.count,
+      },
+      prevScreen: this.prev,
+      nextScreen: this.next,
+    };
+  }
+}
+</script>
+</body>
+</html>

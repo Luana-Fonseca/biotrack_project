@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; font-family: 'Inter', system-ui, sans-serif; color: #0F172A; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  a { color: #00A067; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: 0; background: transparent; padding: 0; color: inherit; }
+  input { font-family: inherit; outline: none; border: 0; background: transparent; }
+</style>
+<script type="application/json" id="speaker-notes">{
+  "1": "BioTrack MVP v1.0 — plataforma completa de sustentabilidade logística. Apresentação do design mobile-first.",
+  "2": "Quatro objetivos principais que endereçam a dor de operadores logísticos: medir, rastrear, educar, reportar.",
+  "3": "Sistema de design compacto: paleta de 5 cores, duas famílias tipográficas (Inter + JetBrains Mono), componentes minimalistas.",
+  "4": "Jornada de entrada: Landing → Registar (2 passos) ou Login (email/senha + Google) → Calculadora.",
+  "5": "Core: calculadora com fórmula CO₂ = fuel × 2.31. Resultado destacado em card verde e persistido no histórico.",
+  "6": "Dois perfis: Operacional (frota, KPIs, projeção) e Explorador (aprendizado, ranking, badges).",
+  "7": "Seis trilhas cobrindo biometano, ESG, gêmeos digitais, blockchain, descarbonização e análise de impacto.",
+  "8": "Relatórios ESG em PDF por período e tipo. Perfil com resumo de impacto e configurações da conta.",
+  "9": "Backend Spring Boot + MySQL. Frontend Flutter. Autenticação JWT com refresh token. Docker + K8s no roadmap.",
+  "10": "Q2: MVP + Dashboards. Q3: Trilhas + Relatórios + APIs. Q4: Gêmeos Digitais + Blockchain.",
+  "11": "Próximos passos: validar com stakeholders, implementar dashboard operacional e iniciar backend das trilhas."
+}</script>
+</helmet>
+
+<x-import component-from-global-scope="deck-stage" from="./deck-stage.js" width="1920" height="1080" hint-size="100%,100%">
+
+  <!-- ═══════════════════ SLIDE 1 · COVER ═══════════════════ -->
+  <section data-label="Cover" style="background: linear-gradient(160deg, #1E3A8A 0%, #0F1E4B 100%); position: relative; overflow: hidden; padding: 96px 128px; color: #fff; display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="position: absolute; width: 900px; height: 900px; border-radius: 50%; background: #00D084; opacity: 0.13; top: -260px; right: -260px; filter: blur(40px);"></div>
+    <div style="position: absolute; width: 640px; height: 640px; border-radius: 50%; border: 1px solid rgba(0, 208, 132, 0.22); top: 120px; right: -80px;"></div>
+    <div style="position: absolute; width: 460px; height: 460px; border-radius: 50%; border: 1px solid rgba(0, 208, 132, 0.14); top: 210px; right: 30px;"></div>
+
+    <div style="position: relative; z-index: 2; display: flex; align-items: center; gap: 20px;">
+      <div style="width: 72px; height: 72px; border-radius: 20px; background: #00D084; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 50px -12px rgba(0, 208, 132, 0.55);">
+        <svg width="40" height="40" viewBox="0 0 30 30" fill="none">
+          <path d="M15 27C15 17 21 11 27 9C27 20 21 25 15 27Z" fill="#fff"/>
+          <path d="M15 27C15 17 9 11 3 9C3 20 9 25 15 27Z" fill="#fff" fill-opacity="0.55"/>
+          <path d="M15 27V16" stroke="#00D084" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #00D084;">Projeto · MVP v1.0.0</div>
+        <div style="font-size: 16px; color: rgba(255,255,255,0.65); margin-top: 4px;">Maio 2026 · Manus AI</div>
+      </div>
+    </div>
+
+    <div style="position: relative; z-index: 2; max-width: 1400px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; color: #00D084; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 32px;">Sustentabilidade Logística</div>
+      <h1 style="font-size: 148px; font-weight: 800; letter-spacing: -0.04em; line-height: 0.95; margin: 0; color: #fff;">BioTrack.</h1>
+      <div style="font-size: 32px; font-weight: 400; color: rgba(255,255,255,0.75); margin-top: 32px; max-width: 1100px; line-height: 1.35;">
+        Meça o impacto ambiental da sua operação, calcule a economia com biometano e emita certificados ESG.
+      </div>
+    </div>
+
+    <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end;">
+      <div style="display: flex; gap: 40px;">
+        <div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.5);">Público</div>
+          <div style="font-size: 17px; margin-top: 6px; color: rgba(255,255,255,0.85);">Frotas · Indivíduos · ESG</div>
+        </div>
+        <div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.5);">Plataforma</div>
+          <div style="font-size: 17px; margin-top: 6px; color: rgba(255,255,255,0.85);">iOS · Android · Web</div>
+        </div>
+        <div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.5);">Status</div>
+          <div style="font-size: 17px; margin-top: 6px; color: #00D084;">✓ Funcional</div>
+        </div>
+      </div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em;">01 / 11</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ SLIDE 2 · VISÃO GERAL ═══════════════════ -->
+  <section data-label="Visão Geral" style="background: #F5F5F1; padding: 96px 128px; display: flex; flex-direction: column; gap: 56px;">
+    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+      <div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #64748B;">O que é</div>
+        <h2 style="font-size: 88px; font-weight: 700; color: #1E3A8A; letter-spacing: -0.03em; line-height: 1; margin: 12px 0 0;">Uma plataforma de<br/>sustentabilidade logística.</h2>
+      </div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #94A3B8; letter-spacing: 0.1em;">02 / 11</div>
+    </div>
+
+    <div style="font-size: 26px; line-height: 1.5; color: #475569; max-width: 1300px;">
+      BioTrack converte dados de consumo de combustível em métricas ambientais acionáveis — CO₂ evitado, árvores salvas e economia em reais — mantendo histórico completo por usuário e por frota.
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 24px;">
+      <div style="background: #fff; border-radius: 20px; padding: 32px; border: 1px solid rgba(15,23,42,0.06); position: relative; overflow: hidden;">
+        <div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(0, 208, 132, 0.12); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00D084" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M8 15h2M8 19h6"/></svg>
+        </div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #00A067;">01</div>
+        <div style="font-size: 22px; font-weight: 700; color: #1E3A8A; margin-top: 8px; letter-spacing: -0.01em;">Calcular</div>
+        <div style="font-size: 15px; color: #64748B; margin-top: 10px; line-height: 1.5;">Impacto ambiental a partir de litros de combustível.</div>
+      </div>
+
+      <div style="background: #fff; border-radius: 20px; padding: 32px; border: 1px solid rgba(15,23,42,0.06); position: relative; overflow: hidden;">
+        <div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(30, 58, 138, 0.10); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1E3A8A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 4 3 5-7"/></svg>
+        </div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #00A067;">02</div>
+        <div style="font-size: 22px; font-weight: 700; color: #1E3A8A; margin-top: 8px; letter-spacing: -0.01em;">Rastrear</div>
+        <div style="font-size: 15px; color: #64748B; margin-top: 10px; line-height: 1.5;">Histórico completo e progresso acumulado no tempo.</div>
+      </div>
+
+      <div style="background: #fff; border-radius: 20px; padding: 32px; border: 1px solid rgba(15,23,42,0.06); position: relative; overflow: hidden;">
+        <div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(124, 58, 237, 0.10); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16a1 1 0 001 1h15V4a1 1 0 00-1-1H5a1 1 0 00-1 1z"/><path d="M4 4v16"/></svg>
+        </div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #00A067;">03</div>
+        <div style="font-size: 22px; font-weight: 700; color: #1E3A8A; margin-top: 8px; letter-spacing: -0.01em;">Educar</div>
+        <div style="font-size: 15px; color: #64748B; margin-top: 10px; line-height: 1.5;">Trilhas em biometano, ESG e descarbonização.</div>
+      </div>
+
+      <div style="background: #fff; border-radius: 20px; padding: 32px; border: 1px solid rgba(15,23,42,0.06); position: relative; overflow: hidden;">
+        <div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(239, 68, 68, 0.10); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/></svg>
+        </div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #00A067;">04</div>
+        <div style="font-size: 22px; font-weight: 700; color: #1E3A8A; margin-top: 8px; letter-spacing: -0.01em;">Reportar</div>
+        <div style="font-size: 15px; color: #64748B; margin-top: 10px; line-height: 1.5;">Relatórios ESG prontos para stakeholders.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ SLIDE 3 · DESIGN SYSTEM ═══════════════════ -->
+  <section data-label="Design System" style="background: #F5F5F1; padding: 96px 128px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px;">
+    <div style="display: flex; flex-direction: column; gap: 40px;">
+      <div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #64748B;">Sistema de Design</div>
+        <h2 style="font-size: 72px; font-weight: 700; color: #1E3A8A; letter-spacing: -0.03em; line-height: 1; margin: 12px 0 0;">Compacto,<br/>consistente.</h2>
+      </div>
+
+      <div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #64748B; margin-bottom: 20px;">Paleta</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 20px; padding: 20px; background: #fff; border-radius: 14px; border: 1px solid rgba(15,23,42,0.06);">
+            <div style="width: 60px; height: 60px; border-radius: 12px; background: #00D084;"></div>
+            <div style="flex: 1;">
+              <div style="font-size: 17px; font-weight: 600; color: #1E3A8A;">Verde Bio</div>
+              <div style="font-size: 13px; color: #64748B; margin-top: 2px;">CTAs · ícones · realce</div>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #00A067;">#00D084</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 20px; padding: 20px; background: #fff; border-radius: 14px; border: 1px solid rgba(15,23,42,0.06);">
+            <div style="width: 60px; height: 60px; border-radius: 12px; background: #1E3A8A;"></div>
+            <div style="flex: 1;">
+              <div style="font-size: 17px; font-weight: 600; color: #1E3A8A;">Azul Profundo</div>
+              <div style="font-size: 13px; color: #64748B; margin-top: 2px;">Headlines · texto principal</div>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #1E3A8A;">#1E3A8A</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 20px; padding: 20px; background: #fff; border-radius: 14px; border: 1px solid rgba(15,23,42,0.06);">
+            <div style="width: 60px; height: 60px; border-radius: 12px; background: #64748B;"></div>
+            <div style="flex: 1;">
+              <div style="font-size: 17px; font-weight: 600; color: #1E3A8A;">Slate</div>
+              <div style="font-size: 13px; color: #64748B; margin-top: 2px;">Texto secundário · legendas</div>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #64748B;">#64748B</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 40px;">
+      <div>
+        
+</x-dc>
+</body>
+</html>
