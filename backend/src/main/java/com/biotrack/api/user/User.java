@@ -10,7 +10,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
@@ -55,7 +54,7 @@ public class User {
 
     private LocalDate lastActivityDate;
 
-    @Lob
+   @Column(columnDefinition = "TEXT")
     private String profilePhotoBase64;
 
     @Column(nullable = false)
