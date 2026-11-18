@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../../core/api_client.dart';
+import '../../core/api_exception.dart';
 import 'learning_models.dart';
 
 class LearningProvider extends ChangeNotifier {
@@ -11,6 +12,7 @@ class LearningProvider extends ChangeNotifier {
   List<TrilhaSummary> trilhas = [];
   Map<int, List<ModuleSummary>> modulesByTrilha = {};
   bool loading = false;
+  String? error;
 
   Future<void> loadTrilhas() async {
     loading = true;
@@ -18,8 +20,11 @@ class LearningProvider extends ChangeNotifier {
     try {
       final list = await _client.getList('/learning/trilhas');
       trilhas = list.map((e) => TrilhaSummary.fromJson(e as Map<String, dynamic>)).toList();
-    } catch (_) {
-      // Keeps whatever was loaded before; screen shows empty state otherwise.
+      error = null;
+    } catch (e) {
+      // Keeps whatever was loaded before, but surfaces the failure so the screen
+      // can show it instead of silently looking empty.
+      error = e is ApiException ? e.message : 'Não foi possível carregar as trilhas';
     }
     loading = false;
     notifyListeners();

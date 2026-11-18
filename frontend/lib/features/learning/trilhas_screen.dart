@@ -45,7 +45,26 @@ class _TrilhasScreenState extends State<TrilhasScreen> {
                   Text('Aprenda sobre descarbonização e ESG',
                       style: AppText.inter(size: 13, color: p.gray)),
                   const SizedBox(height: 20),
-                  ...provider.trilhas.map((t) => _CompactTrilhaCard(trilha: t)),
+                  if (provider.error != null && provider.trilhas.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: Column(
+                        children: [
+                          BioIcon('alert', size: 28, color: p.gray),
+                          const SizedBox(height: 10),
+                          Text(provider.error!,
+                              textAlign: TextAlign.center,
+                              style: AppText.inter(size: 13, color: p.gray)),
+                          const SizedBox(height: 14),
+                          TextButton(
+                            onPressed: () => context.read<LearningProvider>().loadTrilhas(),
+                            child: const Text('Tentar de novo'),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ...provider.trilhas.map((t) => _CompactTrilhaCard(trilha: t)),
                 ],
               ),
       ),

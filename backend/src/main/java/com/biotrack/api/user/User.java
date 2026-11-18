@@ -1,5 +1,8 @@
 package com.biotrack.api.user;
 
+import java.time.Instant;
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,8 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-import java.time.Instant;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "users")
@@ -55,7 +56,6 @@ public class User {
     private LocalDate lastActivityDate;
 
     @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String profilePhotoBase64;
 
     @Column(nullable = false)
